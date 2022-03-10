@@ -1,3 +1,37 @@
+# <h1 align="center"> NFT rewarder system </h1>
+
+Smart contract
+
+- ERC1155
+  - Mapping from token ID to account balances:  
+    `mapping(uint256 => mapping(address => uint256)) private _balances;`
+- whitelisting integrated into contract
+  - data structure which holds mapping between NFT <-> eligible user
+  - can be updated in batches, to minimize gas cost
+- compatibility with Opensea
+- extensive testing - hardhat tests or Foundry
+- chain?
+
+Reward eligibility
+
+- plug-in scripts checking the subgraphs (or some other data source) for specific criteria
+  - script can be a cron-job
+- script's output should be account or list of accounts, stored to file/DB
+- result (account eligible for reward) should be checked manually
+  - do the numbers make sense?
+  - is account EOA or contract?
+- add NFT metadata and jpeg to IPFS and pin it (Pinata)
+- send TX to smart contract, making user whitelisted to mint his NFT
+
+UI
+
+- create jpegs and metadata
+- integrate minting functionality into UI
+  - alert to make user aware of NFT eligibility
+  - minting button
+- display my reward NFTs
+- display page for all the rewarded NFTs - leaderboard, statistics, etc.
+
 # <h1 align="center"> DappTools Template </h1>
 
 **Template repository for getting started quickly with DappTools**
@@ -19,7 +53,7 @@ Contracts can be deployed via the `make deploy` command. Addresses are automatic
 written in a name-address json file stored under `out/addresses.json`. Additionally, you can specify a specific network with `make deploy-rinkeby` or `make deploy-mainnet`. You can choose which contract you want to deploy, by adding it as a variable, like so:
 
 ```bash
-make deploy-rinkeby CONTRACT=Greeter 
+make deploy-rinkeby CONTRACT=Greeter
 ```
 
 We recommend testing your deployments and provide an example under [`scripts/test-deploy.sh`](./scripts/test-deploy.sh)
@@ -75,17 +109,17 @@ ETHERSCAN_API_KEY=<api-key> contract_address=<address> network_name=<mainnet|rin
 Check out the [dapp documentation](https://github.com/dapphub/dapptools/tree/master/src/dapp#dapp-verify-contract) to see how
 verifying contracts work with DappTools.
 
-## Adding contracts 
+## Adding contracts
 
 If you want to add your own contract to this template, you need to update the following to make it work with the deploy scripts, you'll need to:
+
 1. Add the new contract to the `src` folder.
-2. Add any constructor arguments it'll want to the `helper-config.sh` file. 
+2. Add any constructor arguments it'll want to the `helper-config.sh` file.
 3. When you deploy, use `make deploy-rinkeby CONTRACT=<contract-name>`
 
+## Adding networks
 
-## Adding networks 
-
-To add new networks, simply add a new section in the `Makefile` like so 
+To add new networks, simply add a new section in the `Makefile` like so
 
 ```bash
 # kovan
@@ -94,7 +128,7 @@ deploy-kovan: export NETWORK=kovan
 deploy-kovan: check-api-key deploy
 ```
 
-And optionally add parameters to the `helper-config.sh` file. 
+And optionally add parameters to the `helper-config.sh` file.
 
 ## Installing the toolkit
 
@@ -119,9 +153,9 @@ curl https://dapp.tools/install | sh
 
 ## DappTools Resources
 
-* [DappTools](https://dapp.tools)
-    * [Hevm Docs](https://github.com/dapphub/dapptools/blob/master/src/hevm/README.md)
-    * [Dapp Docs](https://github.com/dapphub/dapptools/tree/master/src/dapp/README.md)
-    * [Seth Docs](https://github.com/dapphub/dapptools/tree/master/src/seth/README.md)
-* [DappTools Overview](https://www.youtube.com/watch?v=lPinWgaNceM)
-* [Awesome-DappTools](https://github.com/rajivpo/awesome-dapptools)
+- [DappTools](https://dapp.tools)
+  - [Hevm Docs](https://github.com/dapphub/dapptools/blob/master/src/hevm/README.md)
+  - [Dapp Docs](https://github.com/dapphub/dapptools/tree/master/src/dapp/README.md)
+  - [Seth Docs](https://github.com/dapphub/dapptools/tree/master/src/seth/README.md)
+- [DappTools Overview](https://www.youtube.com/watch?v=lPinWgaNceM)
+- [Awesome-DappTools](https://github.com/rajivpo/awesome-dapptools)
