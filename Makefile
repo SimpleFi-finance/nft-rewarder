@@ -2,51 +2,38 @@
 # (-include to ignore error if it does not exist)
 -include .env
 
-install: solc update npm
+all: clean install update solc build dappbuild
 
-# dapp deps
-update:; dapp update
+# Install proper solc version.
+solc:; nix-env -f https://github.com/dapphub/dapptools/archive/master.tar.gz -iA solc-static-versions.solc_0_8_12
 
-# npm deps for linting etc.
-npm:; yarn install
+# Clean the repo
+clean  :; forge clean
 
-# install solc version
-# example to install other versions: `make solc 0_8_2`
-SOLC_VERSION := 0_8_7
-solc:; nix-env -f https://github.com/dapphub/dapptools/archive/master.tar.gz -iA solc-static-versions.solc_${SOLC_VERSION}
+# Remove modules
+remove :; rm -rf .gitmodules && rm -rf .git/modules/* && rm -rf lib && touch .gitmodules && git add . && git commit -m "modules"
 
-# Build & test
-build  :; dapp build
-test   :; dapp test # --ffi # enable if you need the `ffi` cheat code on HEVM
-clean  :; dapp clean
-lint   :; yarn run lint
-estimate :; ./scripts/estimate-gas.sh ${contract}
-size   :; ./scripts/contract-size.sh ${contract}
+# Install the Modules
+install :; forge install # dapphub/ds-test && forge install rari-capital/solmate && forge install brockelmore/forge-std && forge install ZeframLou/clones-with-immutable-args
 
-# Deployment helpers
-deploy :; @./scripts/deploy.sh
+# Update Dependencies
+update:; forge update
 
-# mainnet
-deploy-mainnet: export ETH_RPC_URL = $(call network,mainnet)
-deploy-mainnet: export NETWORK=mainnet
-deploy-mainnet: check-api-key deploy
+# Builds
+build  :; forge clean && forge build --optimize --optimize-runs 1000000
+dappbuild :; dapp build
 
-# rinkeby
-deploy-rinkeby: export ETH_RPC_URL = $(call network,rinkeby)
-deploy-rinkeby: export NETWORK=rinkeby
-deploy-rinkeby: check-api-key deploy
+# chmod scripts
+scripts :; chmod +x ./scripts/*
 
-# verify on Etherscan
-verify:; ETH_RPC_URL=$(call network,$(network_name)) dapp verify-contract src/Greeter.sol:Greeter $(contract_address)
+# Tests
+test   :; forge clean && forge test --optimize --optimize-runs 1000000 -v # --ffi # enable if you need the `ffi` cheat code on HEVM
 
-check-api-key:
-ifndef ALCHEMY_API_KEY
-	$(error ALCHEMY_API_KEY is undefined)
-endif
+# Lints
+lint :; prettier --write src/**/*.sol && prettier --write src/*.sol
 
-# Returns the URL to deploy to a hosted node.
-# Requires the ALCHEMY_API_KEY env var to be set.
-# The first argument determines the network (mainnet / rinkeby / ropsten / kovan / goerli)
-define network
-https://eth-$1.alchemyapi.io/v2/${ALCHEMY_API_KEY}
-endef
+# Generate Gas Snapshots
+snapshot :; forge clean && forge snapshot --optimize --optimize-runs 1000000
+
+# Fork Mainnet With Hardhat
+mainnet-fork :; npx hardhat node --fork ${ETH_MAINNET_RPC_URL}
