@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # Read the Rinkeby RPC URL
-echo Enter Your Mainnet RPC URL:
-echo Example: "https://eth-mainnet.alchemyapi.io/v2/XXXXXXXXXX"
+echo Enter Your Rinkeby RPC URL:
+echo Example: "https://eth-rinkeby.alchemyapi.io/v2/XXXXXXXXXX"
 read -s rpc
 
 # Read the contract name
