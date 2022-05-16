@@ -13,16 +13,30 @@ contract NFTRewarderTest is DSTest {
     CheatCodes public cheats = CheatCodes(HEVM_ADDRESS);
 
     NFTRewarder public rewarder;
-    string public metadataUri = "https://token-cdn-domain/{id}.json";
 
     function setUp() public {
+        string memory metadataUri = "https://token-cdn-domain/{id}.json";
         rewarder = new NFTRewarder(metadataUri);
+    }
+
+    function testUriIsEmptyByDefault() public {
+        string memory _uri = rewarder.uri(0);
+
+        assertTrue((bytes(_uri)).length == 0);
     }
 
     function testUriIsSet() public {
         string memory _uri = rewarder.uri(0);
+        assertTrue((bytes(_uri)).length == 0);
+
+        // set uri
+        string memory uriToken0 = "https://token-cdn-domain/0.json";
+        rewarder.setUri(0, uriToken0);
+
+        // check new uri is set
+        _uri = rewarder.uri(0);
         assertTrue(
-            keccak256(abi.encode(_uri)) == keccak256(abi.encode(metadataUri))
+            keccak256(abi.encode(_uri)) == keccak256(abi.encode(uriToken0))
         );
     }
 

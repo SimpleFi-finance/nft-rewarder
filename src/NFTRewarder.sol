@@ -11,12 +11,25 @@ contract NFTRewarder is ERC1155, Ownable {
     // track how many reward tokens user has claimed per tokenId
     mapping(address => mapping(uint256 => uint256)) public claimed;
 
+    // tokenId to uri mapping
+    mapping(uint256 => string) public uris;
+
     //// Events
     event Claimed(address indexed user, uint256 indexed id, uint256 amount);
     event Whitelisted(address indexed user, uint256 indexed id, uint256 amount);
     event RemovedFromWhitelist(address indexed user, uint256 indexed id);
 
     constructor(string memory _uri) ERC1155(_uri) {}
+
+    // Setter for metadata uri per tokenId
+    function setUri(uint256 _tokenId, string memory _uri) external onlyOwner {
+        uris[_tokenId] = _uri;
+    }
+
+    // Getter for metadata uri per tokenId
+    function uri(uint256 tokenId) public view override returns (string memory) {
+        return uris[tokenId];
+    }
 
     //// User functions
 
