@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.12;
 
-import "@openzeppelin/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/access/AccessControl.sol";
+import "openzeppelin/token/ERC1155/ERC1155.sol";
+import "openzeppelin/access/AccessControl.sol";
 
 contract NFTRewarder is ERC1155, AccessControl {
     // track how many reward tokens user is eligible to mint per collection id

@@ -1,16 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.12;
 
-import "@ds/test.sol";
+import "forge-std/Test.sol";
 import "../NFTRewarder.sol";
-import "@openzeppelin/token/ERC1155/IERC1155Receiver.sol";
+import "openzeppelin/token/ERC1155/IERC1155Receiver.sol";
 
-interface CheatCodes {
-    function prank(address) external;
-}
-
-contract NFTRewarderTest is DSTest {
-    CheatCodes public cheats = CheatCodes(HEVM_ADDRESS);
+contract NFTRewarderTest is Test {
+    // CheatCodes public vm = CheatCodes(HEVM_ADDRESS);
 
     // main contract being tested
     NFTRewarder public rewarder;
@@ -46,7 +42,7 @@ contract NFTRewarderTest is DSTest {
 
         assertEq(rewarder.claimableTokens(account, tokenId), 0);
 
-        cheats.prank(whitelister);
+        vm.prank(whitelister);
         rewarder.whitelistAccount(account, tokenId, 1);
 
         assertEq(rewarder.claimableTokens(account, tokenId), 1);
@@ -62,11 +58,11 @@ contract NFTRewarderTest is DSTest {
 
         assertEq(rewarder.balanceOf(account, tokenId), 0);
 
-        cheats.prank(whitelister);
+        vm.prank(whitelister);
         rewarder.whitelistAccount(account, tokenId, 1);
 
         // spoof sender to be `account`
-        cheats.prank(account);
+        vm.prank(account);
         rewarder.claim(tokenId, 1);
 
         assertEq(rewarder.balanceOf(account, tokenId), 1);
@@ -78,13 +74,13 @@ contract NFTRewarderTest is DSTest {
 
         assertEq(rewarder.balanceOf(account, tokenId), 0);
 
-        cheats.prank(whitelister);
+        vm.prank(whitelister);
         rewarder.whitelistAccount(account, tokenId, 2);
 
-        cheats.prank(account);
+        vm.prank(account);
         rewarder.claim(tokenId, 1);
 
-        cheats.prank(account);
+        vm.prank(account);
         rewarder.claim(tokenId, 1);
 
         assertEq(rewarder.balanceOf(account, tokenId), 2);
@@ -98,15 +94,15 @@ contract NFTRewarderTest is DSTest {
         assertEq(rewarder.balanceOf(addrA, tokenId), 0);
         assertEq(rewarder.balanceOf(addrB, tokenId), 0);
 
-        cheats.prank(whitelister);
+        vm.prank(whitelister);
         rewarder.whitelistAccount(addrA, tokenId, 1);
-        cheats.prank(whitelister);
+        vm.prank(whitelister);
         rewarder.whitelistAccount(addrB, tokenId, 1);
 
-        cheats.prank(addrA);
+        vm.prank(addrA);
         rewarder.claim(tokenId, 1);
 
-        cheats.prank(addrB);
+        vm.prank(addrB);
         rewarder.claim(tokenId, 1);
 
         assertEq(rewarder.balanceOf(addrA, tokenId), 1);
