@@ -12,16 +12,16 @@ interface CheatCodes {
 contract NFTRewarderTest is DSTest {
     CheatCodes public cheats = CheatCodes(HEVM_ADDRESS);
 
+    // main contract being tested
     NFTRewarder public rewarder;
+    address public whitelister = address(0x1337abc);
 
     function setUp() public {
-        string memory metadataUri = "https://token-cdn-domain/{id}.json";
-        rewarder = new NFTRewarder(metadataUri);
+        rewarder = new NFTRewarder(whitelister);
     }
 
     function testUriIsEmptyByDefault() public {
         string memory _uri = rewarder.uri(0);
-
         assertTrue((bytes(_uri)).length == 0);
     }
 
@@ -45,15 +45,24 @@ contract NFTRewarderTest is DSTest {
         uint256 tokenId = 0;
 
         assertEq(rewarder.claimableTokens(account, tokenId), 0);
+
+        cheats.prank(whitelister);
         rewarder.whitelistAccount(account, tokenId, 1);
+
         assertEq(rewarder.claimableTokens(account, tokenId), 1);
     }
+
+    // function testCannotWhitelistWithoutRole() public {
+    //     rewarder.whitelistAccount(address(this), 0, 1);
+    // }
 
     function testSingleMint() public {
         address account = address(0x1337);
         uint256 tokenId = 0;
 
         assertEq(rewarder.balanceOf(account, tokenId), 0);
+
+        cheats.prank(whitelister);
         rewarder.whitelistAccount(account, tokenId, 1);
 
         // spoof sender to be `account`
@@ -68,6 +77,8 @@ contract NFTRewarderTest is DSTest {
         uint256 tokenId = 0;
 
         assertEq(rewarder.balanceOf(account, tokenId), 0);
+
+        cheats.prank(whitelister);
         rewarder.whitelistAccount(account, tokenId, 2);
 
         cheats.prank(account);
@@ -87,7 +98,9 @@ contract NFTRewarderTest is DSTest {
         assertEq(rewarder.balanceOf(addrA, tokenId), 0);
         assertEq(rewarder.balanceOf(addrB, tokenId), 0);
 
+        cheats.prank(whitelister);
         rewarder.whitelistAccount(addrA, tokenId, 1);
+        cheats.prank(whitelister);
         rewarder.whitelistAccount(addrB, tokenId, 1);
 
         cheats.prank(addrA);
