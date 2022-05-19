@@ -105,6 +105,24 @@ contract NFTRewarderTest is Test {
         assertEq(rewarder.balanceOf(account, tokenId), 2);
     }
 
+    function testCannotClaimMoreThanWhitelistedAmount() public {
+        address account = address(0x1337);
+        uint256 tokenId = 10;
+
+        // whitelist 2 tokens for user
+        vm.prank(whitelister);
+        rewarder.whitelistAccount(account, tokenId, 2);
+
+        // claim 2 times
+        vm.startPrank(account);
+        rewarder.claim(tokenId, 1);
+        rewarder.claim(tokenId, 1);
+
+        // 3rd claim should fail
+        vm.expectRevert("NFTRewarder: No claimable tokens");
+        rewarder.claim(tokenId, 1);
+    }
+
     function testMultipleClaimOfSameTokenId() public {
         address addrA = address(0x1337A);
         address addrB = address(0x1337B);
