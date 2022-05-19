@@ -19,17 +19,30 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
     address public whitelister;
 
     //// Events
-    event Claimed(address indexed user, uint256 indexed id, uint256 amount);
-    event Whitelisted(address indexed user, uint256 indexed id, uint256 amount);
-    event RemovedFromWhitelist(address indexed user, uint256 indexed id);
+    event Claimed(
+        address indexed user,
+        uint256 indexed tokenId,
+        uint256 amount
+    );
+    event Whitelisted(
+        address indexed user,
+        uint256 indexed tokenId,
+        uint256 amount
+    );
+    event RemovedFromWhitelist(address indexed user, uint256 indexed tokenId);
+    event UriSet(uint256 indexed tokenId, string uri);
 
     constructor(address _whitelister) ERC1155("") {
         whitelister = _whitelister;
     }
 
     // Setter for metadata uri per tokenId
-    function setUri(uint256 _tokenId, string memory _uri) external onlyOwner {
-        uris[_tokenId] = _uri;
+    function setUri(uint256 tokenId, string memory tokenUri)
+        external
+        onlyOwner
+    {
+        uris[tokenId] = tokenUri;
+        emit UriSet(tokenId, tokenUri);
     }
 
     // Getter for metadata uri per tokenId
