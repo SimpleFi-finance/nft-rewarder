@@ -61,7 +61,7 @@ contract NFTRewarderTest is Test {
         rewarder.whitelistAccount(address(this), 0, 1);
     }
 
-    function testSingleMint() public {
+    function testSingleClaim() public {
         address account = address(0x1337);
         uint256 tokenId = 0;
 
@@ -77,7 +77,17 @@ contract NFTRewarderTest is Test {
         assertEq(rewarder.balanceOf(account, tokenId), 1);
     }
 
-    function testMulitpleMintsBySameUser() public {
+    function testCannotClaimIfNotWhitelisted() public {
+        address account = address(0x1337);
+        uint256 tokenId = 0;
+
+        // check reward claim reverts
+        vm.expectRevert("NFTRewarder: No claimable tokens");
+        vm.prank(account);
+        rewarder.claim(tokenId, 1);
+    }
+
+    function testMulitpleClaimsBySameUser() public {
         address account = address(0x1337);
         uint256 tokenId = 0;
 
@@ -95,7 +105,7 @@ contract NFTRewarderTest is Test {
         assertEq(rewarder.balanceOf(account, tokenId), 2);
     }
 
-    function testMultipleMintsOfSameTokenId() public {
+    function testMultipleClaimOfSameTokenId() public {
         address addrA = address(0x1337A);
         address addrB = address(0x1337B);
         uint256 tokenId = 0;
