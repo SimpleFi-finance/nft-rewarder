@@ -61,6 +61,23 @@ contract NFTRewarderTest is Test {
         rewarder.whitelistAccount(address(this), 0, 1);
     }
 
+    function testRemovingFromWhitelist() public {
+        address account = address(this);
+        uint256 tokenId = 7;
+
+        // whitelist account
+        vm.prank(whitelister);
+        rewarder.whitelistAccount(account, tokenId, 3);
+        assertEq(rewarder.claimableTokens(account, tokenId), 3);
+
+        // remove from whitelist
+        vm.prank(whitelister);
+        rewarder.removeAccountFromWhitelist(account, tokenId);
+
+        // check it's 0 claimable tokens now
+        assertEq(rewarder.claimableTokens(account, tokenId), 0);
+    }
+
     function testSingleClaim() public {
         address account = address(0x1337);
         uint256 tokenId = 0;

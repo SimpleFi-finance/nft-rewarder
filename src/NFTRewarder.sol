@@ -133,10 +133,10 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
     }
 
     // Remove multiple accounts from whitelist
-    function batchRemoveFromWhitelist(address[] accounts, uint256[] tokenIds)
-        external
-        onlyWhitelister
-    {
+    function batchRemoveFromWhitelist(
+        address[] calldata accounts,
+        uint256[] calldata tokenIds
+    ) external onlyWhitelister {
         uint256 arrayLength = accounts.length;
 
         for (uint256 i = 0; i < arrayLength; i++) {
