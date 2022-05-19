@@ -4,13 +4,13 @@ pragma solidity 0.8.12;
 import "forge-std/Test.sol";
 import "../NFTRewarder.sol";
 import "openzeppelin/token/ERC1155/IERC1155Receiver.sol";
+import "openzeppelin/utils/Strings.sol";
 
 contract NFTRewarderTest is Test {
-    // CheatCodes public vm = CheatCodes(HEVM_ADDRESS);
-
     // main contract being tested
     NFTRewarder public rewarder;
     address public whitelister = address(0x1337abc);
+    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     function setUp() public {
         rewarder = new NFTRewarder(whitelister);
@@ -48,9 +48,10 @@ contract NFTRewarderTest is Test {
         assertEq(rewarder.claimableTokens(account, tokenId), 1);
     }
 
-    // function testCannotWhitelistWithoutRole() public {
-    //     rewarder.whitelistAccount(address(this), 0, 1);
-    // }
+    function testCannotWhitelistWithoutRole() public {
+        vm.expectRevert("Only whitelister account can manage minters list");
+        rewarder.whitelistAccount(address(this), 0, 1);
+    }
 
     function testSingleMint() public {
         address account = address(0x1337);

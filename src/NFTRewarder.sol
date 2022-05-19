@@ -2,9 +2,9 @@
 pragma solidity 0.8.12;
 
 import "openzeppelin/token/ERC1155/ERC1155.sol";
-import "openzeppelin/access/AccessControl.sol";
+import "openzeppelin/access/Ownable.sol";
 
-contract NFTRewarder is ERC1155, AccessControl {
+contract NFTRewarder is ERC1155, Ownable {
     // track how many reward tokens user is eligible to mint per collection id
     mapping(address => mapping(uint256 => uint256)) public minters;
 
@@ -14,23 +14,20 @@ contract NFTRewarder is ERC1155, AccessControl {
     // tokenId to uri mapping
     mapping(uint256 => string) public uris;
 
-    bytes32 public constant WHITELISTER_ROLE = keccak256("WHITELISTER_ROLE");
+    // account responsible for whitelisting
+    address public whitelister;
 
     //// Events
     event Claimed(address indexed user, uint256 indexed id, uint256 amount);
     event Whitelisted(address indexed user, uint256 indexed id, uint256 amount);
     event RemovedFromWhitelist(address indexed user, uint256 indexed id);
 
-    constructor(address whitelister) ERC1155("") {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(WHITELISTER_ROLE, whitelister);
+    constructor(address _whitelister) ERC1155("") {
+        whitelister = _whitelister;
     }
 
     // Setter for metadata uri per tokenId
-    function setUri(uint256 _tokenId, string memory _uri)
-        external
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
+    function setUri(uint256 _tokenId, string memory _uri) external onlyOwner {
         uris[_tokenId] = _uri;
     }
 
@@ -71,7 +68,7 @@ contract NFTRewarder is ERC1155, AccessControl {
         address account,
         uint256 tokenId,
         uint256 amount
-    ) external onlyRole(WHITELISTER_ROLE) {
+    ) external onlyWhitelister {
         require(account != address(0), "Can't whitelist zero address");
         require(amount > 0, "Whitelisted amount must be greater than zero");
         minters[account][tokenId] += amount;
@@ -84,7 +81,7 @@ contract NFTRewarder is ERC1155, AccessControl {
         address[] calldata accounts,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
-    ) external onlyRole(WHITELISTER_ROLE) {
+    ) external onlyWhitelister {
         uint256 arrayLength = accounts.length;
 
         address account;
@@ -108,7 +105,7 @@ contract NFTRewarder is ERC1155, AccessControl {
     // Remove account from minters (and from `claimed`)
     function removeAccountFromWhitelist(address account, uint256 tokenId)
         external
-        onlyRole(WHITELISTER_ROLE)
+        onlyWhitelister
     {
         require(account != address(0), "Can't de-whitelist zero address");
 
@@ -118,13 +115,15 @@ contract NFTRewarder is ERC1155, AccessControl {
         emit RemovedFromWhitelist(account, tokenId);
     }
 
-    // The following functions are overrides required by Solidity.
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC1155, AccessControl)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
+    function setWhitelister(address _whitelister) public onlyOwner {
+        whitelister = _whitelister;
+    }
+
+    modifier onlyWhitelister() {
+        require(
+            _msgSender() == whitelister,
+            "Only whitelister account can manage minters list"
+        );
+        _;
     }
 }
