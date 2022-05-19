@@ -89,9 +89,15 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
         address account,
         uint256 tokenId,
         uint256 amount
-    ) external onlyWhitelister {
-        require(account != address(0), "Can't whitelist zero address");
-        require(amount > 0, "Whitelisted amount must be greater than zero");
+    ) public onlyWhitelister {
+        require(
+            account != address(0),
+            "NFTRewarder: Can't whitelist zero address"
+        );
+        require(
+            amount > 0,
+            "NFTRewarder: Whitelisted amount must be greater than zero"
+        );
         minters[account][tokenId] += amount;
 
         emit Whitelisted(account, tokenId, amount);
@@ -105,21 +111,8 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
     ) external onlyWhitelister {
         uint256 arrayLength = accounts.length;
 
-        address account;
-        uint256 amount;
-        uint256 tokenId;
-
         for (uint256 i = 0; i < arrayLength; i++) {
-            account = accounts[i];
-            amount = amounts[i];
-            tokenId = tokenIds[i];
-
-            require(account != address(0), "Can't whitelist zero address");
-            require(amount > 0, "Whitelisted amount must be greater than zero");
-
-            minters[account][tokenId] += amount;
-
-            emit Whitelisted(account, tokenId, amount);
+            whitelistAccount(accounts[i], amounts[i], tokenIds[i]);
         }
     }
 
