@@ -109,4 +109,21 @@ contract NFTRewarderTest is Test {
         assertEq(rewarder.balanceOf(addrA, tokenId), 1);
         assertEq(rewarder.balanceOf(addrB, tokenId), 1);
     }
+
+    function testCannotMintWhenPaused() public {
+        address account = address(0x1337);
+        uint256 tokenId = 0;
+
+        // whitelist
+        vm.prank(whitelister);
+        rewarder.whitelistAccount(account, tokenId, 1);
+
+        // pause the contract
+        rewarder.pause();
+
+        // check reward claim reverts
+        vm.expectRevert("Pausable: paused");
+        vm.prank(account);
+        rewarder.claim(tokenId, 1);
+    }
 }

@@ -3,8 +3,9 @@ pragma solidity 0.8.12;
 
 import "openzeppelin/token/ERC1155/ERC1155.sol";
 import "openzeppelin/access/Ownable.sol";
+import "openzeppelin/security/Pausable.sol";
 
-contract NFTRewarder is ERC1155, Ownable {
+contract NFTRewarder is ERC1155, Ownable, Pausable {
     // track how many reward tokens user is eligible to mint per collection id
     mapping(address => mapping(uint256 => uint256)) public minters;
 
@@ -34,6 +35,26 @@ contract NFTRewarder is ERC1155, Ownable {
     // Getter for metadata uri per tokenId
     function uri(uint256 tokenId) public view override returns (string memory) {
         return uris[tokenId];
+    }
+
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    function unpause() public onlyOwner {
+        _unpause();
+    }
+
+    // overriden to add pausability check
+    function _beforeTokenTransfer(
+        address operator,
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) internal override whenNotPaused {
+        super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
     //// User functions
