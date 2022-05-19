@@ -116,15 +116,18 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
         }
     }
 
-    // Remove account from minters (and from `claimed`)
+    // Remove any amount of unclaimed tokens for the user
     function removeAccountFromWhitelist(address account, uint256 tokenId)
         external
         onlyWhitelister
     {
-        require(account != address(0), "Can't de-whitelist zero address");
+        require(
+            account != address(0),
+            "NFTRewarder: Can't de-whitelist zero address"
+        );
 
-        minters[account][tokenId] = 0;
-        claimed[account][tokenId] = 0;
+        uint256 alreadyClaimed = claimed[account][tokenId];
+        minters[account][tokenId] = alreadyClaimed;
 
         emit RemovedFromWhitelist(account, tokenId);
     }
