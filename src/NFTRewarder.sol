@@ -116,9 +116,9 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
         }
     }
 
-    // Remove any amount of unclaimed tokens for the user
+    // Remove all the unclaimed tokens for the user
     function removeAccountFromWhitelist(address account, uint256 tokenId)
-        external
+        public
         onlyWhitelister
     {
         require(
@@ -130,6 +130,18 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
         minters[account][tokenId] = alreadyClaimed;
 
         emit RemovedFromWhitelist(account, tokenId);
+    }
+
+    // Remove multiple accounts from whitelist
+    function batchRemoveFromWhitelist(address[] accounts, uint256[] tokenIds)
+        external
+        onlyWhitelister
+    {
+        uint256 arrayLength = accounts.length;
+
+        for (uint256 i = 0; i < arrayLength; i++) {
+            removeAccountFromWhitelist(accounts[i], tokenIds[i]);
+        }
     }
 
     function setWhitelister(address _whitelister) public onlyOwner {
