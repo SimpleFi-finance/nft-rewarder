@@ -126,4 +126,28 @@ contract NFTRewarderTest is Test {
         vm.prank(account);
         rewarder.claim(tokenId, 1);
     }
+
+    function testChangingWhitelister() public {
+        address account = address(0x1337);
+        uint256 tokenId = 0;
+
+        // initial whitelister can whitelist
+        vm.prank(whitelister);
+        rewarder.whitelistAccount(account, tokenId, 1);
+
+        address oldWhitelister = whitelister;
+        address newWhitelister = address(0x1338);
+
+        // set new whitelister
+        rewarder.setWhitelister(newWhitelister);
+
+        // old whitelister cannot whitelist
+        vm.prank(oldWhitelister);
+        vm.expectRevert("Only whitelister account can manage minters list");
+        rewarder.whitelistAccount(account, tokenId, 1);
+
+        // but new whitelister can whitelist
+        vm.prank(newWhitelister);
+        rewarder.whitelistAccount(account, tokenId, 1);
+    }
 }
