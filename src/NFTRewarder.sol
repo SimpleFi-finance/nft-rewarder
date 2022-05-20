@@ -72,18 +72,18 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
 
     //// User functions
 
-    // Claim the token for msg.sender
+    // Claim the token for _msgSender()
     function claim(uint256 tokenId, uint256 amount) external {
         require(
-            claimableTokens(msg.sender, tokenId) >= amount,
+            claimableTokens(_msgSender(), tokenId) >= amount,
             "NFTRewarder: No claimable tokens"
         );
 
         // Mark it claimed and send the token(s)
-        claimed[msg.sender][tokenId] += amount;
-        _mint(msg.sender, tokenId, amount, "");
+        claimed[_msgSender()][tokenId] += amount;
+        _mint(_msgSender(), tokenId, amount, "");
 
-        emit Claimed(msg.sender, tokenId, amount);
+        emit Claimed(_msgSender(), tokenId, amount);
     }
 
     // Return number of tokens in `tokenId` collection user can claim
