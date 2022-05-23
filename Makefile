@@ -2,6 +2,8 @@
 # (-include to ignore error if it does not exist)
 -include .env
 
+deploy-polygon :; sh ./scripts/deploy-polygon.sh
+
 all: clean install update solc build dappbuild
 
 # Install proper solc version.
