@@ -3,6 +3,7 @@
 -include .env
 
 deploy-polygon :; sh ./scripts/deploy-polygon.sh
+verify-polygon :; sh ./scripts/verify-polygon.sh
 
 all: clean install update solc build dappbuild
 
