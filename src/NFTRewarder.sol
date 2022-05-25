@@ -13,7 +13,7 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
     mapping(address => mapping(uint256 => uint256)) public claimed;
 
     // tokenId to uri mapping
-    mapping(uint256 => string) public uris;
+    mapping(uint256 => string) private uris;
 
     // account responsible for whitelisting
     address public whitelister;
@@ -41,6 +41,10 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
         external
         onlyOwner
     {
+        require(
+            bytes(uris[tokenId]).length == 0,
+            "NFTRewarder: URI already set!"
+        );
         uris[tokenId] = tokenUri;
         emit UriSet(tokenId, tokenUri);
     }

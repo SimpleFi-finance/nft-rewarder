@@ -36,12 +36,21 @@ contract NFTRewarderTest is Test {
         );
     }
 
-    function testOnlyOwnerCanChangeUri() public {
+    function testOnlyOwnerCanSetUri() public {
         // try to set uri by random user 0x1437
         string memory uriToken0 = "https://token-cdn-domain/0.json";
         vm.prank(address(0x1437));
         vm.expectRevert("Ownable: caller is not the owner");
         rewarder.setUri(0, uriToken0);
+    }
+
+    function testCannotSetUriTwice() public {
+        string memory uriToken0 = "https://first/0.json";
+        string memory newUriToken0 = "https://second/0.json";
+
+        rewarder.setUri(0, uriToken0);
+        vm.expectRevert("NFTRewarder: URI already set!");
+        rewarder.setUri(0, newUriToken0);
     }
 
     function testWhitelistingSingleAccount() public {
