@@ -45,6 +45,7 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
         require(bytes(uris[tokenId]).length == 0, "NFTRewarder: URI already set!");
         uris[tokenId] = tokenUri;
         emit URI(tokenUri, tokenId);
+        emit TransferSingle(_msgSender(), address(0), address(0), tokenId, 0);
     }
 
     /**
