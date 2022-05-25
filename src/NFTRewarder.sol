@@ -15,16 +15,8 @@ import "openzeppelin/security/Pausable.sol";
  * eligible for reward, contract owner will whitelist him/her and user can then claim the reward.
  */
 contract NFTRewarder is ERC1155, Ownable, Pausable {
-    event Claimed(
-        address indexed user,
-        uint256 indexed tokenId,
-        uint256 amount
-    );
-    event Whitelisted(
-        address indexed user,
-        uint256 indexed tokenId,
-        uint256 amount
-    );
+    event Claimed(address indexed user, uint256 indexed tokenId, uint256 amount);
+    event Whitelisted(address indexed user, uint256 indexed tokenId, uint256 amount);
     event RemovedFromWhitelist(address indexed user, uint256 indexed tokenId);
     event UriSet(uint256 indexed tokenId, string uri);
 
@@ -50,14 +42,8 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
      * - only owner can set uri
      * - uri can be set only once
      */
-    function setUri(uint256 tokenId, string memory tokenUri)
-        external
-        onlyOwner
-    {
-        require(
-            bytes(uris[tokenId]).length == 0,
-            "NFTRewarder: URI already set!"
-        );
+    function setUri(uint256 tokenId, string memory tokenUri) external onlyOwner {
+        require(bytes(uris[tokenId]).length == 0, "NFTRewarder: URI already set!");
         uris[tokenId] = tokenUri;
         emit UriSet(tokenId, tokenUri);
     }
@@ -79,10 +65,7 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
      * - user needs to have enough claimable tokens
      */
     function claim(uint256 tokenId, uint256 amount) external {
-        require(
-            claimableTokens(_msgSender(), tokenId) >= amount,
-            "NFTRewarder: No claimable tokens"
-        );
+        require(claimableTokens(_msgSender(), tokenId) >= amount, "NFTRewarder: No claimable tokens");
 
         claimed[_msgSender()][tokenId] += amount;
         _mint(_msgSender(), tokenId, amount, "");
@@ -93,11 +76,7 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
     /**
      * @dev Return number of tokens user can claim for this tokenId.
      */
-    function claimableTokens(address user, uint256 tokenId)
-        public
-        view
-        returns (uint256)
-    {
+    function claimableTokens(address user, uint256 tokenId) public view returns (uint256) {
         return minters[user][tokenId] - claimed[user][tokenId];
     }
 
@@ -117,14 +96,8 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
         uint256 tokenId,
         uint256 amount
     ) public onlyWhitelister {
-        require(
-            account != address(0),
-            "NFTRewarder: Can't whitelist zero address"
-        );
-        require(
-            amount > 0,
-            "NFTRewarder: Whitelisted amount must be greater than zero"
-        );
+        require(account != address(0), "NFTRewarder: Can't whitelist zero address");
+        require(amount > 0, "NFTRewarder: Whitelisted amount must be greater than zero");
 
         minters[account][tokenId] += amount;
         emit Whitelisted(account, tokenId, amount);
@@ -155,14 +128,8 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
      * - only whitelister can remove account from whitelist
      * - account can't be zero address
      */
-    function removeAccountFromWhitelist(address account, uint256 tokenId)
-        public
-        onlyWhitelister
-    {
-        require(
-            account != address(0),
-            "NFTRewarder: Can't de-whitelist zero address"
-        );
+    function removeAccountFromWhitelist(address account, uint256 tokenId) public onlyWhitelister {
+        require(account != address(0), "NFTRewarder: Can't de-whitelist zero address");
 
         uint256 alreadyClaimed = claimed[account][tokenId];
         minters[account][tokenId] = alreadyClaimed;
@@ -173,10 +140,10 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
     /**
      * @dev Remove eligibility for the unclaimed tokens for multiple accounts.
      */
-    function batchRemoveFromWhitelist(
-        address[] calldata accounts,
-        uint256[] calldata tokenIds
-    ) external onlyWhitelister {
+    function batchRemoveFromWhitelist(address[] calldata accounts, uint256[] calldata tokenIds)
+        external
+        onlyWhitelister
+    {
         uint256 arrayLength = accounts.length;
 
         for (uint256 i = 0; i < arrayLength; i++) {
@@ -235,10 +202,7 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
      * @dev Modifier checks sender is whitelister account
      */
     modifier onlyWhitelister() {
-        require(
-            _msgSender() == whitelister,
-            "Only whitelister account can manage minters list"
-        );
+        require(_msgSender() == whitelister, "Only whitelister account can manage minters list");
         _;
     }
 }

@@ -31,9 +31,7 @@ contract NFTRewarderTest is Test {
 
         // check new uri is set
         _uri = rewarder.uri(0);
-        assertTrue(
-            keccak256(abi.encode(_uri)) == keccak256(abi.encode(uriToken0))
-        );
+        assertTrue(keccak256(abi.encode(_uri)) == keccak256(abi.encode(uriToken0)));
     }
 
     function testOnlyOwnerCanSetUri() public {
