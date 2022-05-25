@@ -18,7 +18,6 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
     event Claimed(address indexed user, uint256 indexed tokenId, uint256 amount);
     event Whitelisted(address indexed user, uint256 indexed tokenId, uint256 amount);
     event RemovedFromWhitelist(address indexed user, uint256 indexed tokenId);
-    event UriSet(uint256 indexed tokenId, string uri);
 
     mapping(address => mapping(uint256 => uint256)) public minters;
     mapping(address => mapping(uint256 => uint256)) public claimed;
@@ -35,7 +34,7 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
     /**
      * @dev Setter for metadata uri per tokenId.
      *
-     * Emits a {UriSet} event.
+     * Emits a {URI} event.
      *
      * Requirements:
      *
@@ -45,7 +44,7 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
     function setUri(uint256 tokenId, string memory tokenUri) external onlyOwner {
         require(bytes(uris[tokenId]).length == 0, "NFTRewarder: URI already set!");
         uris[tokenId] = tokenUri;
-        emit UriSet(tokenId, tokenUri);
+        emit URI(tokenUri, tokenId);
     }
 
     /**
