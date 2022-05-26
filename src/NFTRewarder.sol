@@ -90,6 +90,7 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
      * - only whitelister can whitelist account
      * - account can't be zero address
      * - amount of claimable tokens has to be greater than zero
+     * - URI has to be previously set for the tokenId
      */
     function whitelistAccount(
         address account,
@@ -98,6 +99,7 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
     ) public onlyWhitelister {
         require(account != address(0), "NFTRewarder: Can't whitelist zero address");
         require(amount > 0, "NFTRewarder: Whitelisted amount must be greater than zero");
+        require(bytes(uris[tokenId]).length > 0, "NFTRewarder: URI has to be set before whitelisting accounts");
 
         minters[account][tokenId] += amount;
         emit Whitelisted(account, tokenId, amount);
@@ -202,7 +204,7 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
      * @dev Modifier checks sender is whitelister account
      */
     modifier onlyWhitelister() {
-        require(_msgSender() == whitelister, "Only whitelister account can manage minters list");
+        require(_msgSender() == whitelister, "NFTRewarder: Only whitelister account can manage minters list");
         _;
     }
 }

@@ -54,6 +54,7 @@ contract NFTRewarderTest is Test {
     function testWhitelistingSingleAccount() public {
         address account = address(this);
         uint256 tokenId = 0;
+        rewarder.setUri(tokenId, "ipfs://xy");
 
         assertEq(rewarder.claimableTokens(account, tokenId), 0);
 
@@ -64,13 +65,26 @@ contract NFTRewarderTest is Test {
     }
 
     function testCannotWhitelistWithoutRole() public {
-        vm.expectRevert("Only whitelister account can manage minters list");
+        vm.expectRevert("NFTRewarder: Only whitelister account can manage minters list");
         rewarder.whitelistAccount(address(this), 0, 1);
+    }
+
+    function testCannotWhitelistForNonexistingToken(uint256 tokenId) public {
+        // can't whitelist account before URI is set
+        vm.expectRevert("NFTRewarder: URI has to be set before whitelisting accounts");
+        vm.prank(whitelister);
+        rewarder.whitelistAccount(address(this), tokenId, 1);
+
+        // should work after setting URI
+        rewarder.setUri(tokenId, "ipfs://xy");
+        vm.prank(whitelister);
+        rewarder.whitelistAccount(address(this), tokenId, 1);
     }
 
     function testRemovingFromWhitelist() public {
         address account = address(this);
         uint256 tokenId = 7;
+        rewarder.setUri(tokenId, "ipfs://xy");
 
         // whitelist account
         vm.prank(whitelister);
@@ -88,6 +102,7 @@ contract NFTRewarderTest is Test {
     function testSingleClaim() public {
         address account = address(0x1337);
         uint256 tokenId = 0;
+        rewarder.setUri(tokenId, "ipfs://xy");
 
         assertEq(rewarder.balanceOf(account, tokenId), 0);
 
@@ -111,9 +126,10 @@ contract NFTRewarderTest is Test {
         rewarder.claim(tokenId, 1);
     }
 
-    function testMulitpleClaimsBySameUser() public {
+    function testMultipleClaimsBySameUser() public {
         address account = address(0x1337);
         uint256 tokenId = 0;
+        rewarder.setUri(tokenId, "ipfs://xy");
 
         assertEq(rewarder.balanceOf(account, tokenId), 0);
 
@@ -132,6 +148,7 @@ contract NFTRewarderTest is Test {
     function testCannotClaimMoreThanWhitelistedAmount() public {
         address account = address(0x1337);
         uint256 tokenId = 10;
+        rewarder.setUri(tokenId, "ipfs://xy");
 
         // whitelist 2 tokens for user
         vm.prank(whitelister);
@@ -151,6 +168,7 @@ contract NFTRewarderTest is Test {
         address addrA = address(0x1337A);
         address addrB = address(0x1337B);
         uint256 tokenId = 0;
+        rewarder.setUri(tokenId, "ipfs://xy");
 
         assertEq(rewarder.balanceOf(addrA, tokenId), 0);
         assertEq(rewarder.balanceOf(addrB, tokenId), 0);
@@ -173,6 +191,7 @@ contract NFTRewarderTest is Test {
     function testCannotMintWhenPaused() public {
         address account = address(0x1337);
         uint256 tokenId = 0;
+        rewarder.setUri(tokenId, "ipfs://xy");
 
         // whitelist
         vm.prank(whitelister);
@@ -190,6 +209,7 @@ contract NFTRewarderTest is Test {
     function testMintAfterUnpausing() public {
         address account = address(0x1337);
         uint256 tokenId = 0;
+        rewarder.setUri(tokenId, "ipfs://xy");
 
         // whitelist
         vm.prank(whitelister);
@@ -215,6 +235,7 @@ contract NFTRewarderTest is Test {
     function testChangingWhitelister() public {
         address account = address(0x1337);
         uint256 tokenId = 0;
+        rewarder.setUri(tokenId, "ipfs://xy");
 
         // initial whitelister can whitelist
         vm.prank(whitelister);
@@ -228,7 +249,7 @@ contract NFTRewarderTest is Test {
 
         // old whitelister cannot whitelist
         vm.prank(oldWhitelister);
-        vm.expectRevert("Only whitelister account can manage minters list");
+        vm.expectRevert("NFTRewarder: Only whitelister account can manage minters list");
         rewarder.whitelistAccount(account, tokenId, 1);
 
         // but new whitelister can whitelist
