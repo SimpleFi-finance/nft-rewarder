@@ -81,6 +81,31 @@ contract NFTRewarderTest is Test {
         rewarder.whitelistAccount(address(this), tokenId, 1);
     }
 
+    function testBatchWhitelisting() public {
+        address alice = address(0xa);
+        address bob = address(0xb);
+        uint256 tokenId = 0;
+        rewarder.setUri(tokenId, "ipfs://xy");
+
+        address[] memory accounts = new address[](2);
+        accounts[0] = alice;
+        accounts[1] = bob;
+
+        uint256[] memory tokenIds = new uint256[](2);
+        tokenIds[0] = tokenId;
+        tokenIds[1] = tokenId;
+
+        uint256[] memory amounts = new uint256[](2);
+        tokenIds[0] = 2;
+        tokenIds[1] = 1;
+
+        vm.prank(whitelister);
+        rewarder.batchWhitelistAccounts(accounts, tokenIds, amounts);
+
+        assertEq(rewarder.claimableTokens(alice, tokenId), 2);
+        assertEq(rewarder.claimableTokens(bob, tokenId), 1);
+    }
+
     function testRemovingFromWhitelist() public {
         address account = address(this);
         uint256 tokenId = 7;
