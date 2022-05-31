@@ -96,8 +96,8 @@ contract NFTRewarderTest is Test {
         tokenIds[1] = tokenId;
 
         uint256[] memory amounts = new uint256[](2);
-        tokenIds[0] = 2;
-        tokenIds[1] = 1;
+        amounts[0] = 2;
+        amounts[1] = 1;
 
         vm.prank(whitelister);
         rewarder.batchWhitelistAccounts(accounts, tokenIds, amounts);
@@ -122,6 +122,49 @@ contract NFTRewarderTest is Test {
 
         // check it's 0 claimable tokens now
         assertEq(rewarder.claimableTokens(account, tokenId), 0);
+    }
+
+    function testBatchRemovingFromWhitelist() public {
+        address alice = address(0xa);
+        address bob = address(0xb);
+        uint256 tokenId = 0;
+        rewarder.setUri(tokenId, "ipfs://xy");
+
+        address[] memory accounts = new address[](2);
+        accounts[0] = alice;
+        accounts[1] = bob;
+
+        uint256[] memory tokenIds = new uint256[](2);
+        tokenIds[0] = tokenId;
+        tokenIds[1] = tokenId;
+
+        uint256[] memory amounts = new uint256[](2);
+        amounts[0] = 6;
+        amounts[1] = 4;
+
+        // whitelist accounts
+        vm.prank(whitelister);
+        rewarder.batchWhitelistAccounts(accounts, tokenIds, amounts);
+        assertEq(rewarder.claimableTokens(alice, tokenId), 6);
+        assertEq(rewarder.claimableTokens(bob, tokenId), 4);
+
+        // claim some tokens
+        vm.prank(alice);
+        rewarder.claim(tokenId, 2);
+        vm.prank(bob);
+        rewarder.claim(tokenId, 3);
+
+        // batch remove from whitelist
+        vm.prank(whitelister);
+        rewarder.batchRemoveFromWhitelist(accounts, tokenIds);
+
+        // check it's 0 claimable tokens now for both bob and alice
+        assertEq(rewarder.claimableTokens(alice, tokenId), 0);
+        assertEq(rewarder.claimableTokens(bob, tokenId), 0);
+
+        // but already claimed tokens are intact
+        assertEq(rewarder.balanceOf(alice, tokenId), 2);
+        assertEq(rewarder.balanceOf(bob, tokenId), 3);
     }
 
     function testSingleClaim() public {
