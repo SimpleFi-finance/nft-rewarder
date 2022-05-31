@@ -116,7 +116,7 @@ contract NFTRewarder is ERC1155, Ownable, Pausable {
         uint256 arrayLength = accounts.length;
 
         for (uint256 i = 0; i < arrayLength; i++) {
-            whitelistAccount(accounts[i], amounts[i], tokenIds[i]);
+            whitelistAccount(accounts[i], tokenIds[i], amounts[i]);
         }
     }
 
