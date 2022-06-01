@@ -21,6 +21,7 @@ export class Dapp extends React.Component {
 
     this.state = {
       account: "",
+
       // hasClaimed: false,
       // isWhitelisted: false,
       // merkleProof: "",
@@ -116,20 +117,23 @@ export class Dapp extends React.Component {
    */
   async loadNFTs() {
     try {
-      const result = await axios.post(
-        SUBGRAPH_ENDPOINT,
-        {
-          query: `
-        {
-          rewards {
+      const query = `
+      {
+        accountBalances(where: {user: "${this.state.account}"}) {
+          id
+          reward {
             id
             name
+            description
             image
-          },
-        }`
-        });
-      console.log(result.data);
-      // return result;
+          }
+          amountOwned
+        }
+      }
+      `;
+
+      const claimedNFTs = await axios.post(SUBGRAPH_ENDPOINT, { query: query });
+
     } catch (error) {
       console.error(error);
     }
