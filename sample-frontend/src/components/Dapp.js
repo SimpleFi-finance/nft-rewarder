@@ -1,14 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Container, Button, Image, Header } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import HeaderComp from "./Header";
 import { ethers } from "ethers";
+import axios from "axios";
 
-// import distributorArtifact from "../contracts/Erc721MerkleDistributor.json";
-// import erc721EnumerableArtifact from "../contracts/ERC721Enumerable.json";
-
-// import contractAddress from "../contracts/contract-address.json";
-// import merkleInfo from "../merkle.json";
 
 import { NoWalletDetected } from "./NoWalletDetected";
 import { ConnectWallet } from "./ConnectWallet";
@@ -17,6 +13,7 @@ import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
 const request = require("request");
 
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
+const SUBGRAPH_ENDPOINT = 'https://api.thegraph.com/subgraphs/name/gvladika/nft-rewarder';
 
 export class Dapp extends React.Component {
   constructor(props) {
@@ -38,7 +35,7 @@ export class Dapp extends React.Component {
 
   async componentDidMount() {
     await this.loadEthers();
-    await this.loadContracts();
+    await this.loadNFTs();
     await this.loadData();
   }
 
@@ -102,15 +99,9 @@ export class Dapp extends React.Component {
    * @returns Load web3 provider
    */
   async loadEthers() {
-    console.log("loadEthers()");
-
     this._provider = new ethers.providers.Web3Provider(window.ethereum);
-    // Prompt user for account connections
-    await this._provider.send("eth_requestAccounts", []);
-    const acc = await this._provider.getSigner().getAddress();
-
-    this.setState({ account: acc });
-
+    const [account] = await window.ethereum.enable();
+    this.setState({ account });
 
     window.ethereum.on("accountsChanged", async (accounts) => {
       this._resetState();
@@ -121,24 +112,27 @@ export class Dapp extends React.Component {
   }
 
   /**
-   * Load NFT contract and the Merkle distributor.
+   * Show NFT rewards user has so far claimed 
    */
-  async loadContracts() {
-    // const [account] = await window.ethereum.enable();
-    // this.setState({ account });
-
-    // this._distributor = new ethers.Contract(
-    //   contractAddress.Erc721MerkleDistributor,
-    //   distributorArtifact.abi,
-    //   this._provider.getSigner(0)
-    // );
-
-    // let erc721Address = await this._distributor.token();
-    // this._erc721Enumberable = new ethers.Contract(
-    //   erc721Address,
-    //   erc721EnumerableArtifact.abi,
-    //   this._provider.getSigner(0)
-    // );
+  async loadNFTs() {
+    try {
+      const result = await axios.post(
+        SUBGRAPH_ENDPOINT,
+        {
+          query: `
+        {
+          rewards {
+            id
+            name
+            image
+          },
+        }`
+        });
+      console.log(result.data);
+      // return result;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
