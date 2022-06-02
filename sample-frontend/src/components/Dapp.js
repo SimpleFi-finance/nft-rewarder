@@ -5,6 +5,8 @@ import HeaderComp from "./Header";
 import { ethers } from "ethers";
 import axios from "axios";
 import ClaimedRewards from "./ClaimedRewards";
+import ClaimableRewards from "./ClaimableRewards";
+
 
 
 
@@ -25,6 +27,7 @@ export class Dapp extends React.Component {
     this.state = {
       account: "",
       claimedNFTs: [],
+      claimableNFTs: [],
 
       // hasClaimed: false,
       // isWhitelisted: false,
@@ -40,7 +43,9 @@ export class Dapp extends React.Component {
 
   async componentDidMount() {
     await this.loadEthers();
-    await this.loadNFTs();
+    await this.loadClaimedNFTs();
+    await this.loadClaimableNFTs();
+
     await this.loadData();
   }
 
@@ -92,6 +97,13 @@ export class Dapp extends React.Component {
           />
         )} */}
 
+        {(this.state.claimableNFTs.length > 0) && (
+          <ClaimableRewards
+            nfts={this.state.claimableNFTs}
+          ></ClaimableRewards>
+        )
+        }
+
         {(this.state.claimedNFTs.length > 0) && (
           <ClaimedRewards
             nfts={this.state.claimedNFTs}
@@ -125,7 +137,7 @@ export class Dapp extends React.Component {
   /**
    * Show NFT rewards user has so far claimed 
    */
-  async loadNFTs() {
+  async loadClaimedNFTs() {
     const [account] = await window.ethereum.enable();
     this.setState({ account });
 
@@ -158,6 +170,47 @@ export class Dapp extends React.Component {
           rewardImage: this.ipfsToHttpUrl(accBal.reward.image)
         }));
       this.setState({ claimedNFTs: claimedNFTs });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async loadClaimableNFTs() {
+    try {
+      const query = `
+      {
+        accountBalances(where: {user: "${this.state.account}", amountClaimable_gt: 0}) {
+          id
+          user {
+            id
+          }
+          reward {
+            id
+            name
+            description
+            image
+          }
+          amountWhitelisted
+          amountClaimed
+          amountClaimable
+          amountOwned
+        }
+      }
+      `;
+
+      const subgraphResponse = await axios.post(SUBGRAPH_ENDPOINT, { query: query });
+      const accountBalances = subgraphResponse.data.data.accountBalances;
+
+      var claimableNFTs = []
+      accountBalances.forEach(accBal =>
+        claimableNFTs.push({
+          id: accBal.id,
+          amountClaimable: accBal.amountClaimable,
+          rewardName: accBal.reward.name,
+          rewardDescription: accBal.reward.description,
+          rewardImage: this.ipfsToHttpUrl(accBal.reward.image)
+        }));
+      this.setState({ claimableNFTs: claimableNFTs });
     } catch (error) {
       console.error(error);
     }
@@ -242,6 +295,8 @@ export class Dapp extends React.Component {
     this.state = {
       account: "",
       claimedNFTs: [],
+      hasClaimableTokens: false
+
       // hasClaimed: false,
       // isWhitelisted: false,
       // merkleProof: "",
