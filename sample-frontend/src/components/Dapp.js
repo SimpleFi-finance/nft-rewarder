@@ -4,6 +4,8 @@ import "semantic-ui-css/semantic.min.css";
 import HeaderComp from "./Header";
 import { ethers } from "ethers";
 import axios from "axios";
+import ClaimedRewards from "./ClaimedRewards";
+
 
 
 
@@ -91,21 +93,9 @@ export class Dapp extends React.Component {
         )} */}
 
         {(this.state.claimedNFTs.length > 0) && (
-          <Card>
-            <Image src={this.ipfsToHttpUrl(this.state.claimedNFTs[0].rewardImage)} wrapped ui={false} />
-            <Card.Content>
-              <Card.Header>{this.state.claimedNFTs[0].rewardName}</Card.Header>
-              <Card.Description>
-                {this.state.claimedNFTs[0].rewardDescription}
-              </Card.Description>
-            </Card.Content>
-            <Card.Content extra>
-              <a>
-                You own: {this.state.claimedNFTs[0].amountOwned} <br />
-                Total: {this.state.claimedNFTs[0].amountOwned}
-              </a>
-            </Card.Content>
-          </Card>
+          <ClaimedRewards
+            nfts={this.state.claimedNFTs}
+          ></ClaimedRewards>
         )
         }
 
@@ -165,7 +155,7 @@ export class Dapp extends React.Component {
           amountOwned: accBal.amountOwned,
           rewardName: accBal.reward.name,
           rewardDescription: accBal.reward.description,
-          rewardImage: accBal.reward.image
+          rewardImage: this.ipfsToHttpUrl(accBal.reward.image)
         }));
       this.setState({ claimedNFTs: claimedNFTs });
     } catch (error) {
