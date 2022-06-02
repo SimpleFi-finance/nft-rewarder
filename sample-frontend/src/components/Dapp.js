@@ -144,7 +144,7 @@ export class Dapp extends React.Component {
     try {
       const query = `
       {
-        accountBalances(where: {user: "${this.state.account}"}) {
+        accountBalances(where: {user: "${this.state.account}", amountOwned_gt: 0}) {
           id
           reward {
             id
