@@ -26,7 +26,7 @@ class ClaimedRewards extends Component {
                         <Card.Content extra>
                             <a>
                                 You own: {nft.amountOwned} <br />
-                                Total: {nft.amountOwned}
+                                Total supply: {nft.rewardSupply}
                             </a>
                         </Card.Content>
                     </Card>

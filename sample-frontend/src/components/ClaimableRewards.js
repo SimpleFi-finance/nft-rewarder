@@ -25,8 +25,8 @@ class ClaimedRewards extends Component {
                         </Card.Content>
                         <Card.Content extra>
                             <a>
-                                You can claim: {nft.amountClaimable} <br />
-                                Total: {nft.amountClaimable}
+                                Claimable: {nft.amountClaimable} <br />
+                                Total supply: {nft.rewardSupply}
                             </a>
                         </Card.Content>
                     </Card>

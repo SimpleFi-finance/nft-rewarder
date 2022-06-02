@@ -151,6 +151,7 @@ export class Dapp extends React.Component {
             name
             description
             image
+            supply
           }
           amountOwned
         }
@@ -167,7 +168,8 @@ export class Dapp extends React.Component {
           amountOwned: accBal.amountOwned,
           rewardName: accBal.reward.name,
           rewardDescription: accBal.reward.description,
-          rewardImage: this.ipfsToHttpUrl(accBal.reward.image)
+          rewardImage: this.ipfsToHttpUrl(accBal.reward.image),
+          rewardSupply: accBal.reward.supply
         }));
       this.setState({ claimedNFTs: claimedNFTs });
     } catch (error) {
@@ -189,6 +191,7 @@ export class Dapp extends React.Component {
             name
             description
             image
+            supply
           }
           amountWhitelisted
           amountClaimed
@@ -208,7 +211,8 @@ export class Dapp extends React.Component {
           amountClaimable: accBal.amountClaimable,
           rewardName: accBal.reward.name,
           rewardDescription: accBal.reward.description,
-          rewardImage: this.ipfsToHttpUrl(accBal.reward.image)
+          rewardImage: this.ipfsToHttpUrl(accBal.reward.image),
+          rewardSupply: accBal.reward.supply
         }));
       this.setState({ claimableNFTs: claimableNFTs });
     } catch (error) {
