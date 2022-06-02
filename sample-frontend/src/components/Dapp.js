@@ -1,9 +1,10 @@
 import React from "react";
-import { Container, Button, Image, Header } from "semantic-ui-react";
+import { Container, Button, Image, Header, Card } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import HeaderComp from "./Header";
 import { ethers } from "ethers";
 import axios from "axios";
+
 
 
 import { NoWalletDetected } from "./NoWalletDetected";
@@ -21,6 +22,7 @@ export class Dapp extends React.Component {
 
     this.state = {
       account: "",
+      claimedNFTs: [],
 
       // hasClaimed: false,
       // isWhitelisted: false,
@@ -87,6 +89,26 @@ export class Dapp extends React.Component {
             dismiss={() => this._dismissTransactionError()}
           />
         )} */}
+
+        {(this.state.claimedNFTs.length > 0) && (
+          <Card>
+            <Image src={this.ipfsToHttpUrl(this.state.claimedNFTs[0].rewardImage)} wrapped ui={false} />
+            <Card.Content>
+              <Card.Header>{this.state.claimedNFTs[0].rewardName}</Card.Header>
+              <Card.Description>
+                {this.state.claimedNFTs[0].rewardDescription}
+              </Card.Description>
+            </Card.Content>
+            <Card.Content extra>
+              <a>
+                You own: {this.state.claimedNFTs[0].amountOwned} <br />
+                Total: {this.state.claimedNFTs[0].amountOwned}
+              </a>
+            </Card.Content>
+          </Card>
+        )
+        }
+
       </Container>
     );
   }
@@ -101,8 +123,6 @@ export class Dapp extends React.Component {
    */
   async loadEthers() {
     this._provider = new ethers.providers.Web3Provider(window.ethereum);
-    const [account] = await window.ethereum.enable();
-    this.setState({ account });
 
     window.ethereum.on("accountsChanged", async (accounts) => {
       this._resetState();
@@ -116,6 +136,9 @@ export class Dapp extends React.Component {
    * Show NFT rewards user has so far claimed 
    */
   async loadNFTs() {
+    const [account] = await window.ethereum.enable();
+    this.setState({ account });
+
     try {
       const query = `
       {
@@ -132,8 +155,19 @@ export class Dapp extends React.Component {
       }
       `;
 
-      const claimedNFTs = await axios.post(SUBGRAPH_ENDPOINT, { query: query });
+      const subgraphResponse = await axios.post(SUBGRAPH_ENDPOINT, { query: query });
+      const accountBalances = subgraphResponse.data.data.accountBalances;
 
+      var claimedNFTs = []
+      accountBalances.forEach(accBal =>
+        claimedNFTs.push({
+          id: accBal.id,
+          amountOwned: accBal.amountOwned,
+          rewardName: accBal.reward.name,
+          rewardDescription: accBal.reward.description,
+          rewardImage: accBal.reward.image
+        }));
+      this.setState({ claimedNFTs: claimedNFTs });
     } catch (error) {
       console.error(error);
     }
@@ -217,15 +251,16 @@ export class Dapp extends React.Component {
   _resetState() {
     this.state = {
       account: "",
-      hasClaimed: false,
-      isWhitelisted: false,
-      merkleProof: "",
-      imageUrl: "",
-      imageName: "",
+      claimedNFTs: [],
+      // hasClaimed: false,
+      // isWhitelisted: false,
+      // merkleProof: "",
+      // imageUrl: "",
+      // imageName: "",
 
-      txBeingSent: undefined,
-      transactionError: undefined,
-      networkError: undefined,
+      // txBeingSent: undefined,
+      // transactionError: undefined,
+      // networkError: undefined,
     };
   }
 
