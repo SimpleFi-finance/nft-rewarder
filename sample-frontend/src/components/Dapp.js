@@ -100,6 +100,7 @@ export class Dapp extends React.Component {
         {(this.state.claimableNFTs.length > 0) && (
           <ClaimableRewards
             nfts={this.state.claimableNFTs}
+            signer={this._provider.getSigner(0)}
           ></ClaimableRewards>
         )
         }
@@ -134,6 +135,7 @@ export class Dapp extends React.Component {
     });
   }
 
+
   /**
    * Show NFT rewards user has so far claimed 
    */
@@ -152,6 +154,8 @@ export class Dapp extends React.Component {
             description
             image
             supply
+            tokenAddress
+            tokenId
           }
           amountOwned
         }
@@ -169,7 +173,9 @@ export class Dapp extends React.Component {
           rewardName: accBal.reward.name,
           rewardDescription: accBal.reward.description,
           rewardImage: this.ipfsToHttpUrl(accBal.reward.image),
-          rewardSupply: accBal.reward.supply
+          rewardSupply: accBal.reward.supply,
+          rewardTokenAddress: accBal.reward.tokenAddress,
+          rewardTokenId: accBal.reward.tokenId
         }));
       this.setState({ claimedNFTs: claimedNFTs });
     } catch (error) {
@@ -192,11 +198,10 @@ export class Dapp extends React.Component {
             description
             image
             supply
+            tokenAddress
+            tokenId
           }
-          amountWhitelisted
-          amountClaimed
           amountClaimable
-          amountOwned
         }
       }
       `;
@@ -212,7 +217,9 @@ export class Dapp extends React.Component {
           rewardName: accBal.reward.name,
           rewardDescription: accBal.reward.description,
           rewardImage: this.ipfsToHttpUrl(accBal.reward.image),
-          rewardSupply: accBal.reward.supply
+          rewardSupply: accBal.reward.supply,
+          rewardTokenAddress: accBal.reward.tokenAddress,
+          rewardTokenId: accBal.reward.tokenId
         }));
       this.setState({ claimableNFTs: claimableNFTs });
     } catch (error) {
