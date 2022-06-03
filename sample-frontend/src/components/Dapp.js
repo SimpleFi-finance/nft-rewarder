@@ -43,8 +43,8 @@ export class Dapp extends React.Component {
 
   async componentDidMount() {
     await this.loadEthers();
-    await this.loadClaimedNFTs();
-    await this.loadClaimableNFTs();
+    // await this.loadClaimedNFTs();
+    // await this.loadClaimableNFTs();
 
     await this.loadData();
   }
@@ -69,17 +69,6 @@ export class Dapp extends React.Component {
     return (
       <Container>
         <HeaderComp account={this.state.account} />
-        <Container textAlign="center">
-          <Button
-            size="huge"
-            primary
-            onClick={this.onClickClaim}
-          >
-            Claim your NFT!
-          </Button>
-          <br />
-          <br />
-        </Container>
 
         {/* {this.state.hasClaimed && (
           <Container textAlign="center">
@@ -116,9 +105,6 @@ export class Dapp extends React.Component {
     );
   }
 
-  onClickClaim = async () => {
-    // await this._claim();
-  };
 
   /**
    *
@@ -135,14 +121,18 @@ export class Dapp extends React.Component {
     });
   }
 
+  async loadData() {
+    const [account] = await window.ethereum.enable();
+    this.setState({ account });
+
+    await this.loadClaimedNFTs();
+    await this.loadClaimableNFTs();
+  }
 
   /**
    * Show NFT rewards user has so far claimed 
    */
   async loadClaimedNFTs() {
-    const [account] = await window.ethereum.enable();
-    this.setState({ account });
-
     try {
       const query = `
       {
@@ -227,73 +217,7 @@ export class Dapp extends React.Component {
     }
   }
 
-  /**
-   * Load state data by calling contracts or from JSON file containing Merkle tree info.
-   */
-  async loadData() {
-    // const isWhitelisted = merkleInfo.claims[this.state.account] !== undefined;
-    // this.setState({ isWhitelisted });
 
-    // if (isWhitelisted) {
-    //   const merkleProof = merkleInfo.claims[this.state.account].proof;
-    //   this.setState({ merkleProof });
-    // }
-
-    // const hasClaimed = await this._distributor.hasClaimed(this.state.account);
-    // this.setState({ hasClaimed });
-
-    // if (this.state.hasClaimed) {
-    //   // user can have exactly 1 token so use index 0
-    //   const usersTokenId = await this._erc721Enumberable.tokenOfOwnerByIndex(this.state.account, 0);
-    //   const ipfsUrl = await this._erc721Enumberable.tokenURI(usersTokenId);
-    //   const metadataHttpUrl = this.ipfsToHttpUrl(ipfsUrl);
-
-    //   // fetch metadata and extract image url
-    //   request(metadataHttpUrl, { json: true }, (error, res, body) => {
-    //     if (error) {
-    //       return console.log(error);
-    //     }
-
-    //     if (!error && res.statusCode === 200) {
-    //       this.setState({ imageUrl: this.ipfsToHttpUrl(body.image) });
-    //       this.setState({ imageName: body.name });
-    //     }
-    //   });
-    // }
-  }
-
-  /**
-   * Send the TX to Merkle distributor to claim NFT. Handle any error which may occur
-   * @returns
-   */
-  async _claim() {
-    try {
-      this._dismissTransactionError();
-
-      // send the transaction
-      const tx = await this._distributor.claim(this.state.merkleProof);
-      this.setState({ txBeingSent: tx.hash });
-      const receipt = await tx.wait();
-
-      // The receipt, contains a status flag, which is 0 to indicate an error.
-      if (receipt.status === 0) {
-        throw new Error("Transaction failed");
-      } else {
-        // TX successful
-        await this.loadData();
-      }
-    } catch (error) {
-      if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
-        return;
-      } else {
-        // store error for display
-        console.error(error);
-        this.setState({ transactionError: error });
-      }
-    } finally {
-      this.setState({ txBeingSent: undefined });
-    }
-  }
 
   ipfsToHttpUrl(ipfsUrl) {
     let prefix = "https://ipfs.io/ipfs/";

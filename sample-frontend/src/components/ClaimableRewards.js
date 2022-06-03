@@ -36,6 +36,7 @@ class ClaimedRewards extends Component {
                                 <Button floated='right' primary onClick={(e) => this.onClickClaim(e, nft.rewardTokenAddress, nft.rewardTokenId, nft.amountClaimable)}>
                                     Claim
                                 </Button>
+
                             </div>
 
                         </Card.Content>
@@ -45,9 +46,6 @@ class ClaimedRewards extends Component {
     }
 
     onClickClaim = async (event, tokenAddress, tokenId, amountClaimable) => {
-        console.log("Click click", tokenAddress, tokenId);
-
-
         const erc1155 = new ethers.Contract(
             tokenAddress,
             NFTRewarder.abi,
