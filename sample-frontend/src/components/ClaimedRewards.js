@@ -4,7 +4,7 @@ import { Card, Image } from "semantic-ui-react";
 class ClaimedRewards extends Component {
     render() {
         return (
-            <Card.Group>
+            <Card.Group centered>
                 {this.renderCards()}
             </Card.Group>
         );

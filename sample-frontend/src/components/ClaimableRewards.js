@@ -6,7 +6,7 @@ import { ethers } from "ethers";
 class ClaimedRewards extends Component {
     render() {
         return (
-            <Card.Group>
+            <Card.Group centered>
                 {this.renderCards()}
             </Card.Group>
         );

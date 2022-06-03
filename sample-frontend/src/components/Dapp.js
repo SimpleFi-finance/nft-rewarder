@@ -43,9 +43,6 @@ export class Dapp extends React.Component {
 
   async componentDidMount() {
     await this.loadEthers();
-    // await this.loadClaimedNFTs();
-    // await this.loadClaimableNFTs();
-
     await this.loadData();
   }
 
@@ -86,6 +83,10 @@ export class Dapp extends React.Component {
           />
         )} */}
 
+        <Header as='h3' block textAlign='center'  >
+          Congrats, you are eligible to claim NFT reward!
+        </Header>
+
         {(this.state.claimableNFTs.length > 0) && (
           <ClaimableRewards
             nfts={this.state.claimableNFTs}
@@ -93,6 +94,10 @@ export class Dapp extends React.Component {
           ></ClaimableRewards>
         )
         }
+
+        <Header as='h3' block textAlign='center'  >
+          My rewards
+        </Header>
 
         {(this.state.claimedNFTs.length > 0) && (
           <ClaimedRewards
