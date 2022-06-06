@@ -187,8 +187,6 @@ export class Dapp extends React.Component {
     }
   }
 
-
-
   ipfsToHttpUrl(ipfsUrl) {
     let prefix = "https://ipfs.io/ipfs/";
     // remove 'ipfs://'

@@ -52,7 +52,7 @@ class ClaimedRewards extends Component {
             this.props.signer
         );
 
-        const tx = await erc1155.claim(tokenId, 1);
+        const tx = await erc1155.claim(tokenId, amountClaimable);
         const receipt = await tx.wait();
 
         if (receipt.status === 0) {
