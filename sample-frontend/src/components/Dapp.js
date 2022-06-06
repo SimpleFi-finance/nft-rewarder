@@ -1,23 +1,14 @@
 import React from "react";
-import { Container, Button, Image, Header, Card } from "semantic-ui-react";
+import { Container, Header } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import HeaderComp from "./Header";
 import { ethers } from "ethers";
 import axios from "axios";
 import ClaimedRewards from "./ClaimedRewards";
 import ClaimableRewards from "./ClaimableRewards";
-
-
-
-
-
 import { NoWalletDetected } from "./NoWalletDetected";
 import { ConnectWallet } from "./ConnectWallet";
-import { TransactionErrorMessage } from "./TransactionErrorMessage";
-import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
-const request = require("request");
 
-const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
 const SUBGRAPH_ENDPOINT = 'https://api.thegraph.com/subgraphs/name/gvladika/nft-rewarder';
 
 export class Dapp extends React.Component {
@@ -28,16 +19,6 @@ export class Dapp extends React.Component {
       account: "",
       claimedNFTs: [],
       claimableNFTs: [],
-
-      // hasClaimed: false,
-      // isWhitelisted: false,
-      // merkleProof: "",
-      // imageUrl: "",
-      // imageName: "",
-
-      // txBeingSent: undefined,
-      // transactionError: undefined,
-      // networkError: undefined,
     };
   }
 
@@ -66,22 +47,6 @@ export class Dapp extends React.Component {
     return (
       <Container>
         <HeaderComp account={this.state.account} />
-
-        {/* {this.state.hasClaimed && (
-          <Container textAlign="center">
-            <Header as="h1">Congrats, you're a SimpleFi OG!</Header>
-            <br />
-            <Header as="h3">{this.state.imageName}</Header>
-            <Image size="medium" centered src={this.state.imageUrl} />
-          </Container>
-        )}
-        {this.state.txBeingSent && <WaitingForTransactionMessage txHash={this.state.txBeingSent} />}
-        {this.state.transactionError && (
-          <TransactionErrorMessage
-            message={this._getRpcErrorMessage(this.state.transactionError)}
-            dismiss={() => this._dismissTransactionError()}
-          />
-        )} */}
 
         <Header as='h3' block textAlign='center'  >
           Congrats, you are eligible to claim NFT reward!
@@ -236,33 +201,7 @@ export class Dapp extends React.Component {
       account: "",
       claimedNFTs: [],
       hasClaimableTokens: false
-
-      // hasClaimed: false,
-      // isWhitelisted: false,
-      // merkleProof: "",
-      // imageUrl: "",
-      // imageName: "",
-
-      // txBeingSent: undefined,
-      // transactionError: undefined,
-      // networkError: undefined,
     };
-  }
-
-  _dismissTransactionError() {
-    this.setState({ transactionError: undefined });
-  }
-
-  _dismissNetworkError() {
-    this.setState({ networkError: undefined });
-  }
-
-  _getRpcErrorMessage(error) {
-    if (error.data) {
-      return error.data.message;
-    }
-
-    return error.message;
   }
 
   async _connectWallet() {

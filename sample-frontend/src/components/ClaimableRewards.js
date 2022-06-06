@@ -60,33 +60,6 @@ class ClaimedRewards extends Component {
         } else {
             console.log("Transaction successful");
         }
-
-        // try {
-        //     this._dismissTransactionError();
-
-        //     // send the transaction
-        //     const tx = await this._distributor.claim(this.state.merkleProof);
-        //     this.setState({ txBeingSent: tx.hash });
-        //     const receipt = await tx.wait();
-
-        //     // The receipt, contains a status flag, which is 0 to indicate an error.
-        //     if (receipt.status === 0) {
-        //         throw new Error("Transaction failed");
-        //     } else {
-        //         // TX successful
-        //         await this.loadData();
-        //     }
-        // } catch (error) {
-        //     if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
-        //         return;
-        //     } else {
-        //         // store error for display
-        //         console.error(error);
-        //         this.setState({ transactionError: error });
-        //     }
-        // } finally {
-        //     this.setState({ txBeingSent: undefined });
-        // }
     };
 }
 
