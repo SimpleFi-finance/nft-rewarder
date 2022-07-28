@@ -2,6 +2,9 @@
 # (-include to ignore error if it does not exist)
 -include .env
 
+deploy-polygon :; sh ./scripts/deploy-polygon.sh
+verify-polygon :; sh ./scripts/verify-polygon.sh
+
 all: clean install update solc build dappbuild
 
 # Install proper solc version.
@@ -27,7 +30,7 @@ dappbuild :; dapp build
 scripts :; chmod +x ./scripts/*
 
 # Tests
-test   :; forge clean && forge test --optimize --optimize-runs 1000000 -v # --ffi # enable if you need the `ffi` cheat code on HEVM
+test   :; forge clean && forge test --optimize --optimize-runs 1000000 -vv # --ffi # enable if you need the `ffi` cheat code on HEVM
 
 # Lints
 lint :; prettier --write src/**/*.sol && prettier --write src/*.sol
